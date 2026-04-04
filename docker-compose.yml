@@ -1,0 +1,7 @@
+services:
+  singeur:
+    image: registry.redyxo.com/singeur:latest
+    container_name: singeur
+    restart: always
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
