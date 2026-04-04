@@ -50,6 +50,7 @@ async def on_ready():
 @app_commands.describe(nombre=f"Nombre de messages à remonter (défaut: 1, max: 10)")
 async def singe(interaction: discord.Interaction, nombre: int = 1):
     """Réagit au(x) dernier(s) message(s) avec une série d'emojis prédéfinis."""
+    print(f"[CMD] /singe reçu", flush=True)
 
     # Validation du paramètre
     if nombre < 1 or nombre > 10:
