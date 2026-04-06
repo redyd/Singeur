@@ -1,6 +1,6 @@
 services:
   singeur:
-    image: registry.redyxo.com/singeur:latest
+    image: registry.redyd.dev/singeur:latest
     container_name: singeur
     restart: always
     environment:
