@@ -1,0 +1,10 @@
+services:
+  singeur:
+    image: registry.redyd.dev/singeur:latest
+    container_name: singeur
+    restart: always
+    environment:
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./streaks.json:/app/streaks.json

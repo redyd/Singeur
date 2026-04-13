@@ -1,0 +1,15 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  deploy:
+    uses: redyd-git/.github/.github/workflows/deploy.yml@main
+    with:
+      image_name: singeur
+    secrets:
+      REGISTRY_USER: ${{ secrets.REGISTRY_USER }}
+      REGISTRY_PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
