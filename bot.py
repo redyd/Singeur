@@ -178,6 +178,15 @@ async def singe(interaction: discord.Interaction, membre: discord.Member):
             )
             return
 
+        # Vérifie si le bot a déjà réagi à ce message
+        already_reacted = any(r.me for r in target_msg.reactions)
+        if already_reacted:
+            await interaction.followup.send(
+                f"⚠️ Le dernier message de **{membre.display_name}** a déjà été singifié !",
+                ephemeral=True,
+            )
+            return
+
         # Application des réactions
         for emoji in EMOJIS:
             try:
