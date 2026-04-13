@@ -8,4 +8,3 @@ services:
       - PYTHONUNBUFFERED=1
     volumes:
       - ./streaks.json:/app/streaks.json
-      - ./images:/app/images

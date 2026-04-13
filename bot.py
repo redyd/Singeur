@@ -260,14 +260,14 @@ async def singe_stats(interaction: discord.Interaction, membre: discord.Member =
     )
 
 
-@bot.tree.command(name="image", description="Envoie une image 🖼️")
-@app_commands.describe(nom="Le nom de l'image à envoyer")
-async def image(interaction: discord.Interaction, nom: str):
+@bot.tree.command(name="neuille", description="Montre un neuille")
+@app_commands.describe(nom="Le nom du neuille")
+async def neuille(interaction: discord.Interaction, nom: str):
     source = COMMANDES_IMAGES.get(nom)
     if source is None:
         dispo = ", ".join(f"`{k}`" for k in COMMANDES_IMAGES) or "aucune"
         await interaction.response.send_message(
-            f"❌ Image inconnue. Disponibles : {dispo}", ephemeral=True
+            f"❌ Neuille inconnue. Disponibles : {dispo}", ephemeral=True
         )
         return
 
@@ -286,7 +286,7 @@ async def image(interaction: discord.Interaction, nom: str):
         await interaction.followup.send(f"❌ Erreur : `{e}`", ephemeral=True)
 
 
-@image.autocomplete("nom")
+@neuille.autocomplete("nom")
 async def image_autocomplete(interaction: discord.Interaction, current: str):
     return [
         app_commands.Choice(name=k, value=k)
