@@ -32,6 +32,14 @@ EMOJIS = [
 DELAI_ENTRE_REACTIONS = 0.5
 STREAKS_FILE = "streaks.json"
 
+# ── Commandes images ───────────────────────────────────────────────────────────
+COMMANDES_IMAGES = {
+    "mattini-stringini":  "images/mattini_stringini.png",
+    "grrr-mange-moi": "images/matteo_sexy.jpg",
+    "soeur": "images/Soeur.png",
+    "retourne-toi": "images/theo.png"
+}
+
 # ── Streak helpers ─────────────────────────────────────────────────────────────
 
 def load_streaks() -> dict:
@@ -124,6 +132,39 @@ def streak_message(entry: dict, display_name: str, already_today: bool) -> str:
         f"consecutif{'s' if streak > 1 else ''}{record_str} "
         f"| Total : **{uses}** utilisation{'s' if uses > 1 else ''}"
     )
+
+
+# ── Enregistrement dynamique des commandes images ─────────────────────────────
+
+def register_image_commands():
+    """Crée une slash command par entrée dans COMMANDES_IMAGES."""
+    for cmd_name, source in COMMANDES_IMAGES.items():
+        # Closure pour capturer source correctement dans la boucle
+        def make_callback(src):
+            async def callback(interaction: discord.Interaction):
+                await interaction.response.defer()
+                try:
+                    if src.startswith("http://") or src.startswith("https://"):
+                        await interaction.followup.send(src)
+                    else:
+                        if not os.path.isfile(src):
+                            await interaction.followup.send(
+                                f"❌ Fichier introuvable : `{src}`", ephemeral=True
+                            )
+                            return
+                        await interaction.followup.send(file=discord.File(src))
+                except Exception as e:
+                    await interaction.followup.send(
+                        f"❌ Erreur : `{e}`", ephemeral=True
+                    )
+            return callback
+
+        cmd = app_commands.Command(
+            name=cmd_name,
+            description=f"Envoie l'image {cmd_name}",
+            callback=make_callback(source),
+        )
+        bot.tree.add_command(cmd)
 
 
 # ── Setup du bot ───────────────────────────────────────────────────────────────
@@ -253,4 +294,5 @@ async def singe_stats(interaction: discord.Interaction, membre: discord.Member =
 
 # ── Lancement ──────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
+    register_image_commands()
     bot.run(TOKEN)
