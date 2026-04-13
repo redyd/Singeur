@@ -146,7 +146,6 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 async def on_ready():
     print(f"✅ Connecté en tant que {bot.user} (ID: {bot.user.id})")
     try:
-        bot.tree.clear_commands(guild=None)
         synced = await bot.tree.sync()
         print(f"🔄 {len(synced)} commande(s) slash synchronisée(s)")
     except Exception as e:
