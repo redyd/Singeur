@@ -33,11 +33,11 @@ DELAI_ENTRE_REACTIONS = 0.5
 STREAKS_FILE = "streaks.json"
 
 # ── Commandes images ───────────────────────────────────────────────────────────
+# Clé = nom de la commande slash, valeur = chemin local ou URL
 COMMANDES_IMAGES = {
-    "mattini_stringini":  "images/mattini_stringini.png",
-    "grrr_mange_moi": "images/matteo_sexy.jpg",
-    "soeur": "images/Soeur.png",
-    "retourne_toi": "images/theo.png"
+    # "carte":  "images/carte.png",
+    # "regles": "images/regles.png",
+    # "meme":   "https://example.com/meme.jpg",
 }
 
 # ── Streak helpers ─────────────────────────────────────────────────────────────
@@ -133,38 +133,6 @@ def streak_message(entry: dict, display_name: str, already_today: bool) -> str:
         f"| Total : **{uses}** utilisation{'s' if uses > 1 else ''}"
     )
 
-
-# ── Enregistrement dynamique des commandes images ─────────────────────────────
-
-def register_image_commands():
-    """Crée une slash command par entrée dans COMMANDES_IMAGES."""
-    for cmd_name, source in COMMANDES_IMAGES.items():
-        # Closure pour capturer source correctement dans la boucle
-        def make_callback(src):
-            async def callback(interaction: discord.Interaction):
-                await interaction.response.defer()
-                try:
-                    if src.startswith("http://") or src.startswith("https://"):
-                        await interaction.followup.send(src)
-                    else:
-                        if not os.path.isfile(src):
-                            await interaction.followup.send(
-                                f"❌ Fichier introuvable : `{src}`", ephemeral=True
-                            )
-                            return
-                        await interaction.followup.send(file=discord.File(src))
-                except Exception as e:
-                    await interaction.followup.send(
-                        f"❌ Erreur : `{e}`", ephemeral=True
-                    )
-            return callback
-
-        cmd = app_commands.Command(
-            name=cmd_name,
-            description=f"Envoie l'image {cmd_name}",
-            callback=make_callback(source),
-        )
-        bot.tree.add_command(cmd)
 
 
 # ── Setup du bot ───────────────────────────────────────────────────────────────
@@ -292,7 +260,41 @@ async def singe_stats(interaction: discord.Interaction, membre: discord.Member =
     )
 
 
+@bot.tree.command(name="neuille", description="Montre un neuiiiile")
+@app_commands.describe(nom="Le nom du neuille")
+async def neuille(interaction: discord.Interaction, nom: str):
+    source = COMMANDES_IMAGES.get(nom)
+    if source is None:
+        dispo = ", ".join(f"`{k}`" for k in COMMANDES_IMAGES) or "aucune"
+        await interaction.response.send_message(
+            f"❌ Image inconnue. Disponibles : {dispo}", ephemeral=True
+        )
+        return
+
+    await interaction.response.defer()
+    try:
+        if source.startswith("http://") or source.startswith("https://"):
+            await interaction.followup.send(source)
+        else:
+            if not os.path.isfile(source):
+                await interaction.followup.send(
+                    f"❌ Fichier introuvable : `{source}`", ephemeral=True
+                )
+                return
+            await interaction.followup.send(file=discord.File(source))
+    except Exception as e:
+        await interaction.followup.send(f"❌ Erreur : `{e}`", ephemeral=True)
+
+
+@neuille.autocomplete("nom")
+async def image_autocomplete(interaction: discord.Interaction, current: str):
+    return [
+        app_commands.Choice(name=k, value=k)
+        for k in COMMANDES_IMAGES
+        if current.lower() in k.lower()
+    ]
+
+
 # ── Lancement ──────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    register_image_commands()
     bot.run(TOKEN)
